@@ -14,20 +14,15 @@ export const ChatContainer = () => {
     const newMessages = [...messages, { role: "user", text: input }];
     setMessages(newMessages);
     setInput("");
-
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { role: "bot", text: "Reading Document..." }]);
-    }, 1000);
+   
 
     try {
         const response = await axios.post("http://localhost:3000/services/askai/query",
             {
-                input
+                userInp:input
             }
         )
-        console.log(response);
-
-        setMessages((prev) => [...prev, { role: "bot", text: response.data }]);
+        setMessages((prev) => [...prev, { role: "bot", text: response.data.output.content }]);
     } catch (error) {
         console.error("Error:", error);
         setMessages((prev) => [...prev, { role: "bot", text: "Something went wrong. Try again!" }]);
