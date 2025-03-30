@@ -22,8 +22,8 @@ pdfrouter.post("/pdfUp", upload.single("pdf"), (async (req, res) => {
             res.status(400).send("No file uploaded");
             return;
         }
-        const pdf = fs_1.default.readFileSync(req.file.path);
-        const data = await (0, pdf_parse_1.default)(pdf);
+        const pdfBuffer = await fs_1.default.promises.readFile(req.file.path);
+        const data = await (0, pdf_parse_1.default)(pdfBuffer);
         const spiltArr = data.text.split("\n");
         const textArray = spiltArr.filter(line => typeof line === 'string' && line.trim().length > 0);
         const maxChunkSize = 400;
@@ -34,7 +34,7 @@ pdfrouter.post("/pdfUp", upload.single("pdf"), (async (req, res) => {
         if (!embeddingResponse || !embeddingResponse.data) {
             throw new Error("Failed to generate the embeddings");
         }
-        checkGen = true;
+        // checkGen=true;
         if (embeddingResponse && embeddingResponse.data) {
             const fieldsData = embeddingResponse.data.map((item) => ({
                 vector_field: item.embedding,

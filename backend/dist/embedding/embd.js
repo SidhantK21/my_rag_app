@@ -7,7 +7,7 @@ exports.gen = void 0;
 const openai_1 = __importDefault(require("openai"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const apikey = process.env.OPENAI_API_KEY;
+const apikey = process.env.OPENAI_API;
 const openai = new openai_1.default({
     apiKey: apikey
 });

@@ -23,8 +23,8 @@ pdfrouter.post("/pdfUp",upload.single("pdf"),(async (req: Request, res: Response
             return;
         }
   
-        const pdf = fs.readFileSync(req.file.path);
-        const data = await pdfParse(pdf);
+        const pdfBuffer =  await fs.promises.readFile(req.file.path);
+        const data = await pdfParse(pdfBuffer);
         
         const spiltArr= data.text.split("\n");
         const textArray = spiltArr.filter(line => typeof line === 'string' && line.trim().length > 0);
@@ -37,12 +37,11 @@ pdfrouter.post("/pdfUp",upload.single("pdf"),(async (req: Request, res: Response
 
        
         const embeddingResponse = await gen(textChunks);
-        
         if(!embeddingResponse||!embeddingResponse.data)
         {
           throw new Error("Failed to generate the embeddings");
         }
-        checkGen=true;
+        // checkGen=true;
 
       
         if (embeddingResponse&&embeddingResponse.data) {

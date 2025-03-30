@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import dotenv from "dotenv";
 
 dotenv.config();
-const apikey=process.env.OPENAI_API_KEY;
+const apikey=process.env.OPENAI_API;
 
 
 const openai = new OpenAI({

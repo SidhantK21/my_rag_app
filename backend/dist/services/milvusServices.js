@@ -72,8 +72,8 @@ const initailzeService = async () => {
                 collection_name: exports.collectionName,
                 field_name: 'vector_field',
                 index_name: 'vector_index',
-                index_type: 'IVF_FLAT', // Choose an appropriate index type
-                metric_type: 'L2', // Use 'COSINE' if you prefer cosine similarity
+                index_type: 'IVF_FLAT',
+                metric_type: 'L2',
                 params: { nlist: 1024 },
             });
             console.log("Index created successfully.");
