@@ -7,6 +7,7 @@ export const ChatContainer = () => {
     { role: "bot", text: "Hello! You can ask your questions!! 😊" },
   ]);
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -14,25 +15,24 @@ export const ChatContainer = () => {
     const newMessages = [...messages, { role: "user", text: input }];
     setMessages(newMessages);
     setInput("");
-   
+    setLoading(true);
 
     try {
-        const response = await axios.post("http://localhost:3000/services/askai/query",
-            {
-                userInp:input
-            }
-        )
-        setMessages((prev) => [...prev, { role: "bot", text: response.data.output.content }]);
+      const response = await axios.post("http://localhost:3000/services/askai/query", {
+        userInp: input,
+      });
+      setMessages((prev) => [...prev, { role: "bot", text: response.data.output.content }]);
     } catch (error) {
-        console.error("Error:", error);
-        setMessages((prev) => [...prev, { role: "bot", text: "Something went wrong. Try again!" }]);
+      console.error("Error:", error);
+      setMessages((prev) => [...prev, { role: "bot", text: "Something went wrong. Try again!" }]);
+    } finally {
+      setLoading(false);
     }
-
   };
 
   return (
     <div className="w-full min-h-screen bg-black flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-3xl h-[85vh] bg-white/10 backdrop-blur-2xl shadow-2xl rounded-3xl flex flex-col overflow-hidden border border-white/20 sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
+      <div className="w-full max-w-3xl h-[85vh] bg-white/10 backdrop-blur-2xl shadow-2xl rounded-3xl flex flex-col overflow-hidden border border-white/20">
         {/* Header */}
         <div className="p-5 border-b border-white/10 bg-white/5 flex items-center gap-4 shadow-md">
           <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl animate-pulse">
@@ -62,6 +62,15 @@ export const ChatContainer = () => {
               </div>
             </div>
           ))}
+
+          {/* Loading Animation */}
+          {loading && (
+            <div className="flex justify-start">
+              <div className="p-4 rounded-2xl max-w-[80%] md:max-w-md shadow-md bg-gray-800 text-white mr-6 md:mr-12">
+                <p className="text-sm leading-relaxed animate-pulse">Typing...</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Input Area */}
@@ -74,10 +83,12 @@ export const ChatContainer = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              disabled={loading}
             />
             <button
               onClick={sendMessage}
               className="p-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 shadow-lg transform hover:scale-105 active:scale-95"
+              disabled={loading}
             >
               <Send size={20} />
             </button>
