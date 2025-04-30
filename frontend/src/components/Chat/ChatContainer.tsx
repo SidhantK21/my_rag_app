@@ -21,6 +21,9 @@ export const ChatContainer = () => {
       const response = await axios.post("http://localhost:3000/services/askai/query", {
         userInp: input,
       });
+
+      // this is just a check message 
+
       setMessages((prev) => [...prev, { role: "bot", text: response.data.output.content }]);
     } catch (error) {
       console.error("Error:", error);
