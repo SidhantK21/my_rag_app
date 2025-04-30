@@ -1,7 +1,8 @@
 import { MilvusClient,DataType } from "@zilliz/milvus2-sdk-node";
 
 
-const address="http://localhost:19530";
+const address = "http://milvus-standalone:19530";
+
 // export this client to tingle with the db in the other folders 
 type Collection_name=string;
 type Dbname=string;
