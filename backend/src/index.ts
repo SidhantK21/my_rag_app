@@ -9,7 +9,9 @@ dotenv.config();
 const app=express();
 const port=process.env.PORT;
 
-initailzeService();
+initailzeService()
+  .then(() => console.log("Milvus service initialized."))
+  .catch((err) => console.error("Milvus init error:", err));
 
 app.use(
     cors({
