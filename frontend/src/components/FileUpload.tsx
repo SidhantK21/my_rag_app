@@ -1,122 +1,212 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { FileUp } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState, useCallback } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { FileText, X, Upload, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { useDropzone } from "react-dropzone";
 import axios from "axios";
 
+type StatusType = "success" | "error" | null;
+
+interface Status {
+  type: StatusType;
+  message: string | null;
+}
+
 export const FileUpload = () => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [serverMessage,setServermessage]=useState<string|null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [status, setStatus] = useState<Status>({ type: null, message: null });
 
-  const handleFileUpload = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setFileName(selectedFile.name);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles?.[0]) {
+      setFile(acceptedFiles[0]);
+      setStatus({ type: null, message: null });
     }
+  }, []);
+
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isDragAccept,
+    isDragReject,
+  } = useDropzone({
+    onDrop,
+    accept: { 'application/pdf': ['.pdf'] },
+    maxFiles: 1,
+    multiple: false,
+  });
+
+  const handleRemoveFile = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setFile(null);
+    setStatus({ type: null, message: null });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  
     if (!file) {
-      setMessage("Please select a file first!");
+      setStatus({ type: "error", message: "Please select a file first" });
       return;
     }
-
+  
     setUploading(true);
-    setMessage(null);
-
+    setStatus({ type: null, message: null });
+  
     const formData = new FormData();
     formData.append("pdf", file);
-
+  
     try {
-      const response = await axios.post("http://localhost:3000/services/datatoprocess/pdfUp", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-
+      const response = await axios.post(
+        "http://localhost:3000/services/datatoprocess/pdfUp",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+  
+      setStatus({
+        type: "success",
+        message: response.data.message || "File uploaded successfully!",
       });
-      setServermessage(response.data.message);
-      setMessage("File uploaded successfully!");
       console.log(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Upload failed:", error);
-      setMessage("Upload failed. Please try again.");
+      setStatus({
+        type: "error",
+        message: "Upload failed. Please try again.",
+      });
     } finally {
       setUploading(false);
     }
   };
 
   return (
-    <div className="flex flex-col bg-black items-center justify-center min-h-screen space-y-4">
+    <div className="min-h-screen w-full flex items-center justify-center bg-black p-4">
       <motion.div
-        className="cursor-pointer p-4 rounded-lg border-gray-300"
-        initial={{ scale: 1 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={handleFileUpload}
-      >
-        <FileUp size={48} className="text-white" />
-      </motion.div>
-
-      <AnimatePresence mode="wait">
-        <motion.h1
-          key={fileName ? "uploaded" : "initial"}
-          className="font-bold text-2xl text-center px-4 text-white"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-        >
-          {fileName ? "Great! Now submit it so we can process it" : "Please upload a PDF for our system to operate on it!"}
-        </motion.h1>
-      </AnimatePresence>
-
-      {fileName && (
-        <motion.p
-          className="text-white text-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          Uploaded File: {fileName}
-        </motion.p>
-      )}
-
-      <motion.button
-        initial={{ opacity: 0, y: 10 }}
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ duration: 0.3 }}
-        className="border rounded-lg px-6 py-3 font-bold bg-black text-white"
-        onClick={handleSubmit}
-        disabled={uploading}
+        transition={{ duration: 0.5 }}
       >
-        {uploading ? "Uploading..." : "Submit"}
-      </motion.button>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Upload Your PDF</h1>
+            <p className="text-sm text-gray-400">
+              We'll process your document and extract the important information
+            </p>
+          </div>
 
-      {message && (
-        <motion.p className="text-white text-sm mt-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          {message}
-        </motion.p>
-      )}
+          <div
+            {...getRootProps()}
+            className={`
+              relative cursor-pointer transition-all duration-300 ease-in-out
+              border-2 border-dashed rounded-xl p-8
+              flex flex-col items-center justify-center text-center
+              min-h-44 md:min-h-52
+              ${isDragActive ? "border-white bg-white/5" : "border-gray-700 hover:border-gray-500"}
+              ${isDragAccept ? "border-white bg-white/10" : ""}
+              ${isDragReject ? "border-red-500 bg-red-500/5" : ""}
+            `}
+          >
+            <input {...getInputProps()} />
 
-      {serverMessage && (
-        <motion.p className="text-green-600 text-sm mt-2 font-bold" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          {serverMessage}
-        </motion.p>
-      )}
+            <AnimatePresence mode="wait">
+              {file ? (
+                <motion.div
+                  className="w-full space-y-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <FileText className="text-gray-400 w-5 h-5" />
+                      <span className="text-sm text-gray-300 truncate max-w-40 md:max-w-60">
+                        {file.name}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        ({(file.size / 1024).toFixed(1)} KB)
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveFile}
+                      className="p-1 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  className="space-y-3"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <div className="bg-white/5 p-4 rounded-full inline-flex">
+                    <Upload className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <div>
+                    <p className="text-gray-300 text-sm font-medium mb-1">
+                      {isDragActive ? "Drop your PDF here" : "Drag & drop your PDF here"}
+                    </p>
+                    <p className="text-gray-500 text-xs">or click to browse files</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
-      <input
-        type="file"
-        ref={fileInputRef}
-        className="hidden"
-        accept="application/pdf"
-        onChange={handleFileChange}
-      />
+          <AnimatePresence>
+            {status.message && (
+              <motion.div
+                className={`flex items-center rounded-lg p-3 space-x-2 text-sm
+                  ${status.type === "error" ? "bg-red-950/30 text-red-300" : ""}
+                  ${status.type === "success" ? "bg-green-950/30 text-green-300" : ""}
+                `}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
+                {status.type === "error" && <AlertCircle className="w-4 h-4 text-red-400" />}
+                {status.type === "success" && <CheckCircle className="w-4 h-4 text-green-400" />}
+                <span>{status.message}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <motion.button
+            type="submit"
+            disabled={!file || uploading}
+            className={`
+              w-full py-3 rounded-lg font-medium flex items-center justify-center
+              transition-all duration-300
+              ${!file || uploading
+                ? "bg-gray-800 text-gray-500 cursor-not-allowed"
+                : "bg-white text-black hover:bg-gray-100 active:bg-gray-200"
+              }
+            `}
+            whileHover={file && !uploading ? { scale: 1.01 } : {}}
+            whileTap={file && !uploading ? { scale: 0.98 } : {}}
+          >
+            {uploading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="animate-spin w-4 h-4" />
+                <span>Uploading...</span>
+              </div>
+            ) : (
+              "Upload PDF"
+            )}
+          </motion.button>
+
+          <div className="text-xs text-gray-500 space-y-1 text-center">
+            <p>Accepted file type: PDF only</p>
+            <p>Maximum file size: 10MB</p>
+          </div>
+        </form>
+      </motion.div>
     </div>
   );
 };
