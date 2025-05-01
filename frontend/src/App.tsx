@@ -59,10 +59,10 @@ function App() {
     //   </AnimatePresence>
     // </div>
 
-    <div className="min-h-screen bg-black">
-      <ChatContainer />
-    </div>
-    // <FileUpload/>
+    // <div className="min-h-screen bg-black">
+    //   <ChatContainer />
+    // </div>
+    <FileUpload/>
   );
 }
 
