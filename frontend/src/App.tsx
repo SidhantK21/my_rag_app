@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Herosection';
-import { Pricing } from "./components/Pricing";
-import { Footer } from "./components/Footer";
-import { SignIn } from './components/Signin';
-import { SignUp } from './components/SignUp';
-import { HowItWorks } from './components/HowitWorks';
-import FAQSection from './components/FAQs';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChatContainer } from './components/Chat/ChatContainer';
+// import { Navbar } from './components/Navbar';
+// import { Hero } from './components/Herosection';
+// import { Pricing } from "./components/Pricing";
+// import { Footer } from "./components/Footer";
+// import { SignIn } from './components/Signin';
+// import { SignUp } from './components/SignUp';
+// import { HowItWorks } from './components/HowitWorks';
+// import FAQSection from './components/FAQs';
+// import { motion, AnimatePresence } from 'framer-motion';
+// import { ChatContainer } from './components/Chat/ChatContainer';
 import { FileUpload } from './components/FileUpload';
 
 export type AuthMode = 'signin' | 'signup' | null;
