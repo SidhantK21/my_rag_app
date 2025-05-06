@@ -1,132 +1,188 @@
-import { useState } from "react";
-import { Send, Bot, Sparkles, User } from "lucide-react";
-import axios from "axios";
+import { useState, useRef, useEffect } from 'react';
+import { Send, FileText, Plus, MessageSquare, Settings, LogOut } from 'lucide-react';
+
+// Message type definition
+type Message = {
+  id: string;
+  content: string;
+  sender: 'user' | 'ai';
+  timestamp: Date;
+};
 
 export const ChatContainer = () => {
-  const [messages, setMessages] = useState([
-    { role: "bot", text: "Hello! How can I assist you today? 👋" },
-  ]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  // State for messages, input, and loading state
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Ref for auto-scrolling to the latest message
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const sendMessage = async () => {
+  // Sample conversations for the sidebar
+  const conversations = [
+    { id: '1', title: 'Resume Analysis', date: 'May 5' },
+    { id: '2', title: 'Research Paper', date: 'May 4' },
+    { id: '3', title: 'Meeting Notes', date: 'May 3' },
+  ];
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Handle sending a message
+  const handleSendMessage = (e: React.MouseEvent | React.KeyboardEvent) => {
+    if (e.type === 'keydown' && (e as React.KeyboardEvent).key !== 'Enter') {
+      return;
+    }
+    
     if (!input.trim()) return;
+    
+    // Add user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: input,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    
+    // Simulate AI response
+    setIsLoading(true);
+    setTimeout(() => {
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I've analyzed your PDF and found the following information. How can I help you further?",
+        sender: 'ai',
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      setIsLoading(false);
+    }, 1000);
+  };
 
-    const newMessages = [...messages, { role: "user", text: input }];
-    setMessages(newMessages);
-    setInput("");
-    setLoading(true);
-
-    try {
-      const response = await axios.post("http://localhost:3000/services/askai/query", {
-        userInp: input,
-      });
-
-      // this is just a check message 
-
-      setMessages((prev) => [...prev, { role: "bot", text: response.data.output.content }]);
-    } catch (error) {
-      console.error("Error:", error);
-      setMessages((prev) => [...prev, { role: "bot", text: "Something went wrong. Please try again later." }]);
-    } finally {
-      setLoading(false);
+  // Handle Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage(e);
     }
   };
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-8 h-screen">
-      <div className="h-full bg-gradient-to-b from-black/80 to-black/60 backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-[0_0_100px_rgba(255,255,255,0.05)] flex flex-col overflow-hidden transition-all duration-500 hover:shadow-[0_0_150px_rgba(255,255,255,0.08)]">
-        {/* Header */}
-        <div className="px-8 py-6 bg-gradient-to-b from-black/95 to-black/80 border-b border-white/10">
-          <div className="flex items-center gap-4">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full group-hover:blur-3xl transition-all duration-500"></div>
-              <div className="relative p-3 bg-gradient-to-b from-white/20 to-white/5 rounded-2xl backdrop-blur-sm border border-white/10 shadow-inner">
-                <Bot className="text-white w-6 h-6 group-hover:scale-110 transition-transform duration-500" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-transparent bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text tracking-wide">
-                  AI Assistant
-                </h1>
-                <Sparkles className="w-4 h-4 text-white/80 animate-pulse" />
-              </div>
-              <p className="text-sm text-white/60 tracking-wide font-light">Powered by advanced AI</p>
-            </div>
-          </div>
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className="w-64 bg-white border-r border-gray-200">
+        {/* New chat button */}
+        <div className="p-4">
+          <button className="flex items-center justify-center w-full py-2 px-3 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
+            <Plus size={18} className="mr-2" />
+            New Chat
+          </button>
         </div>
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} items-end gap-3`}
-            >
-              {msg.role === "bot" && (
-                <div className="p-2.5 bg-gradient-to-b from-white/20 to-white/5 rounded-2xl backdrop-blur-sm shadow-lg border border-white/10">
-                  <Bot className="w-4 h-4 text-white" />
-                </div>
-              )}
-              <div
-                className={`group transition-all duration-500 ease-out ${
-                  msg.role === "user"
-                    ? "bg-gradient-to-br from-white to-white/95 text-black"
-                    : "bg-gradient-to-b from-white/20 to-white/5 text-white"
-                } px-6 py-4 rounded-2xl max-w-[85%] shadow-[0_8px_16px_rgba(0,0,0,0.1)] backdrop-blur-sm hover:shadow-[0_16px_32px_rgba(0,0,0,0.15)] transform hover:-translate-y-1 border border-white/10`}
-              >
-                <p className="text-sm leading-relaxed">{msg.text}</p>
+        
+        {/* Conversations list */}
+        <div className="px-3 overflow-y-auto">
+          <h3 className="px-3 text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Recent Conversations</h3>
+          {conversations.map(convo => (
+            <div key={convo.id} className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer mb-1">
+              <FileText size={16} className="text-gray-500" />
+              <div className="ml-3 flex-1">
+                <p className="text-sm font-medium text-gray-900 truncate">{convo.title}</p>
+                <p className="text-xs text-gray-500">{convo.date}</p>
               </div>
-              {msg.role === "user" && (
-                <div className="p-2.5 bg-gradient-to-br from-white to-white/95 rounded-2xl shadow-lg border border-white/20">
-                  <User className="w-4 h-4 text-black" />
-                </div>
-              )}
             </div>
           ))}
-
-          {/* Loading Animation */}
-          {loading && (
-            <div className="flex justify-start items-end gap-3">
-              <div className="p-2.5 bg-gradient-to-b from-white/20 to-white/5 rounded-2xl backdrop-blur-sm shadow-lg border border-white/10">
-                <Bot className="w-4 h-4 text-white" />
+        </div>
+        
+        {/* Bottom menu */}
+        <div className="absolute bottom-0 w-64 border-t border-gray-200 bg-white">
+          <div className="flex items-center justify-between p-4">
+            <button className="flex items-center text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md">
+              <Settings size={16} className="mr-2" />
+              Settings
+            </button>
+            <button className="flex items-center text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md">
+              <LogOut size={16} className="mr-2" />
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Main chat area */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="border-b border-gray-200 py-4 px-6 bg-white">
+          <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+            <FileText size={20} className="mr-2 text-blue-600" />
+            PDF Chat Assistant
+          </h2>
+        </div>
+        
+        {/* Messages area */}
+        <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+          {messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <MessageSquare size={48} className="text-blue-600 mb-4" />
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">Start chatting with your PDF</h2>
+              <p className="text-gray-600 max-w-md">
+                Ask questions about your document and get instant answers powered by AI.
+              </p>
+            </div>
+          ) : (
+            messages.map(message => (
+              <div 
+                key={message.id} 
+                className={`mb-4 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div 
+                  className={`max-w-3/4 p-4 rounded-lg ${
+                    message.sender === 'user' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white border border-gray-200 text-gray-800'
+                  }`}
+                >
+                  {message.content}
+                </div>
               </div>
-              <div className="bg-gradient-to-b from-white/20 to-white/5 px-6 py-4 rounded-2xl shadow-lg backdrop-blur-sm border border-white/10">
-                <div className="flex gap-2">
-                  <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                  <div className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.4s]"></div>
+            ))
+          )}
+          {isLoading && (
+            <div className="flex justify-start mb-4">
+              <div className="bg-white border border-gray-200 p-4 rounded-lg">
+                <div className="flex space-x-2">
+                  <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce delay-75"></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce delay-150"></div>
                 </div>
               </div>
             </div>
           )}
+          <div ref={messagesEndRef} />
         </div>
-
-        {/* Input Area */}
-        <div className="px-8 py-6 bg-gradient-to-b from-black/95 to-black/80 border-t border-white/10">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 group">
-              <div className="absolute inset-0 bg-white/10 blur-xl rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative">
-                <input
-                  type="text"
-                  className="w-full px-6 py-4  border border-white/10 rounded-xl text-white placeholder-white/40 outline-none transition-all duration-300 focus:border-white/20  hover:border-white/20 bg-gradient-to-b from-white/[0.1] to-white/[0.03] shadow-[0_4px_12px_rgba(0,0,0,0.1)] backdrop-blur-xl"
-                  placeholder="Type your message..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-                  disabled={loading}
-                />
-                <div className="absolute inset-px rounded-[11px] pointer-events-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"></div>
-              </div>
-            </div>
-            <button
-              onClick={sendMessage}
-              disabled={loading}
-              className="p-4 bg-gradient-to-br from-white to-white/95 rounded-xl text-black transition-all duration-500 transform hover:scale-105 active:scale-95 hover:shadow-[0_8px_16px_rgba(255,255,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none border border-white/20"
+        
+        {/* Input area */}
+        <div className="border-t border-gray-200 p-4 bg-white">
+          <div className="flex items-center">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask a question about your PDF..."
+              className="flex-1 border border-gray-300 rounded-l-lg py-3 px-4 outline-none"
+            />
+            <button 
+              onClick={handleSendMessage}
+              disabled={!input.trim()}
+              className={`p-4 bg-black text-black rounded-r-lg${
+                input.trim() 
+              } text-white transition`}
             >
-              <Send className="w-5 h-5" />
+              <Send size={20} />
             </button>
           </div>
         </div>

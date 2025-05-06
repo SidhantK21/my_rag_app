@@ -8,7 +8,7 @@ import { useState } from 'react';
 // import { HowItWorks } from './components/HowitWorks';
 // import FAQSection from './components/FAQs';
 // import { motion, AnimatePresence } from 'framer-motion';
-// import { ChatContainer } from './components/Chat/ChatContainer';
+import { ChatContainer } from './components/Chat/ChatContainer';
 import { FileUpload } from './components/FileUpload';
 
 export type AuthMode = 'signin' | 'signup' | null;
@@ -59,10 +59,10 @@ function App() {
     //   </AnimatePresence>
     // </div>
 
-    // <div className="min-h-screen bg-black">
-    //   <ChatContainer />
-    // </div>
-    <FileUpload/>
+    <div className="min-h-screen">
+      <ChatContainer />
+    </div>
+    // <FileUpload/>
   );
 }
 
