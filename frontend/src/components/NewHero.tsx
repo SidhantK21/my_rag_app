@@ -40,7 +40,7 @@ export function NewHero() {
       <Spotlight />
 
       {/* Main content container */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 pt-30 pb-16 md:pt-32 md:pb-20">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 pt-30 pb-16 md:pt-38 md:pb-20">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -65,8 +65,8 @@ export function NewHero() {
               <p className={`text-base sm:text-lg md:text-xl max-w-2xl mx-auto ${
                 isDark ? "text-white/70" : "text-black/70"
               }`}>
-                Experience the future of document analysis with our advanced AI-powered platform.
-                Extract insights, analyze content, and make data-driven decisions effortlessly.
+             No need to read long PDFs — just give them to us, and we'll handle the rest.
+             Upload - Process - Chat with your PDF.
               </p>
             </motion.div>
 
@@ -106,7 +106,7 @@ export function NewHero() {
               animate="visible"
               transition={{ duration: 0.8, delay: 0.6 }}
               variants={fadeIn}
-              className="w-full max-w-4xl px-4 py-10"
+              className="w-full max-w-4xl px-10 py-6"
             >
               <div 
                 className={`rounded-xl p-6 md:p-8 backdrop-blur-md ${
@@ -136,7 +136,7 @@ export function NewHero() {
                         isDark ? "text-white" : "text-black"
                       }`}>
                         <NumberTicker value={stat.value} decimalPlaces={0} />
-                        <span>{stat.suffix}</span>
+                        <span className="text-red-600">{stat.suffix}</span>
                       </div>
                       <div className={`text-base md:text-lg font-medium mb-1 ${
                         isDark ? "text-white/80" : "text-black/80"
