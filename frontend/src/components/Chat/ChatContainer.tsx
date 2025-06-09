@@ -79,6 +79,7 @@ export const ChatContainer = () => {
     ]);
   };
 
+  // figure this out and fix it 
   const getAIResponse = (msg: string): string => {
     const responses = [
       "Can you tell me more about that?",
