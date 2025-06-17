@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import { Navbar } from '../components/Navbar';
-import { Pricing } from "../components/Pricing";
-import { Footer } from "../components/Footer";
-import { SignIn } from '../components/Signin';
-import { SignUp } from '../components/SignUp';
-import { HowItWorks } from '../components/HowitWorks';
-import FAQSection from '../components/FAQs';
-import { motion, AnimatePresence } from 'motion/react';
-import { NewHero } from '../components/NewHero';
+// import { Navbar } from '../components/Navbar';
+// import { Pricing } from "../components/Pricing";
+// import { Footer } from "../components/Footer";
+// import { SignIn } from '../components/Signin';
+// import { SignUp } from '../components/SignUp';
+// import { HowItWorks } from '../components/HowitWorks';
+// import FAQSection from '../components/FAQs';
+// import { motion, AnimatePresence } from 'motion/react';
+// import { NewHero } from '../components/NewHero';
 import { FileUpload } from '../components/FileUpload';
 
 export type AuthMode = 'signin' | 'signup' | null;
 
 export const LandingPage=()=> {
-  const [authMode, setAuthMode] = useState<AuthMode>(null);
+//   const [authMode, setAuthMode] = useState<AuthMode>(null);
 
   return (
     // <div className="relative">
