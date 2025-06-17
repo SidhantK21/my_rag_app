@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 
 dotenv.config();
 
-const key=process.env.OPENAI_API;
+const key=process.env.OPENAPI_KEY;
 const openai=new OpenAI({
     apiKey:key
 });
@@ -18,7 +18,7 @@ export const chatCompl= async (content:inputQuery)=>{
                 {role:"system",content:"You are a helpful assistant for summarizing information."},
                 {role:"user",content:content},
             ],
-            model:"gpt-4o",
+            model:"gpt-3.5-turbo",
             max_tokens:500,
             store:true
         });

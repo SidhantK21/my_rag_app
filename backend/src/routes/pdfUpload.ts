@@ -82,9 +82,11 @@ pdfrouter.post("/pdfUp",upload.single("pdf"),(async (req: Request, res: Response
                 data:chunksData
               })
               
+
               
               res.json({
-                message:"All operation are done !"
+                message:"All operation are done !",
+                fileId: pgInsertres.id
               })
             } else {
               console.error("error in id");
