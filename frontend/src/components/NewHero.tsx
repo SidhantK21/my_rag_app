@@ -62,7 +62,7 @@ export function NewHero() {
                 SMMRY
               </h1>
 
-              <p className={`text-base sm:text-lg md:text-xl max-w-2xl mx-auto ${
+              <p className={`sm:text-lg md:text-xl max-w-2xl mx-auto ${
                 isDark ? "text-white/70" : "text-black/70"
               }`}>
              No need to read long PDFs — just give them to us, and we'll handle the rest.
