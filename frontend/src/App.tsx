@@ -8,7 +8,6 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/upload" element={<FileUpload />} />
-        <Route path="/summary" element={<FileUpload />} />
       </Routes>
     </Router>
   );
