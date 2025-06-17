@@ -14,6 +14,7 @@ export type AuthMode = 'signin' | 'signup' | null;
 export const LandingPage=()=> {
   const [authMode, setAuthMode] = useState<AuthMode>(null);
 
+// check stral  
   return (
     <div className="relative">
       <Navbar onGetStarted={() => setAuthMode('signin')} />
