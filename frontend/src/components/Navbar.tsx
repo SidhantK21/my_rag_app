@@ -32,19 +32,19 @@ export function Navbar({ onGetStarted }: NavbarProps) {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between w-full">
           <div className="flex items-center space-x-8">
-            <motion.div className="flex items-center" whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            <div className="flex items-center">
               <Bot className={`h-5 w-5 ${darkMode ? "text-white" : "text-black"}`} />
               <span className={`ml-2 text-sm font-medium ${darkMode ? "text-white/90" : "text-black/90"}`}>
-                AI Assistant
+                SMMRY
               </span>
-            </motion.div>
+            </div>
 
             {navItems.map((item) => (
               <motion.a
                 key={item.href}
                 href={item.href}
-                className={`text-lg ${darkMode ? "text-white/75 hover:text-white" : "text-black/75 hover:text-black"} transition-colors`}
-                whileHover={{ scale: 1.05 }}
+                className={`text-sm ${darkMode ? "text-white/75 hover:text-white" : "text-black/75 hover:text-black"} transition-colors`}
+                // whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
                 {item.label}

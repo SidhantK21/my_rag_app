@@ -116,7 +116,7 @@ export const Hero = () => {
                 darkMode ? "from-white via-white to-white/50" : "from-black via-black to-black/80"
               } bg-clip-text text-transparent`}
             >
-               PDF READER
+             SMMRY
             </span>
           </h1>
           <p className={`text-xl ${darkMode ? "text-white/60" : "text-black/70"} max-w-2xl mx-auto font-light`}>

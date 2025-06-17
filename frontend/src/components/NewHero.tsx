@@ -54,19 +54,19 @@ export function NewHero() {
               animate="visible"
               transition={{ duration: 0.8, delay: 0.2 }}
               variants={fadeIn}
-              className="space-y-6 px-2"
+              className="space-y-2 px-2"
             >
               <h1 className={`text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight ${
                 isDark ? "text-white" : "text-black"
               }`}>
-                PDF READER
+                SMMRY
               </h1>
 
               <p className={`text-base sm:text-lg md:text-xl max-w-2xl mx-auto ${
                 isDark ? "text-white/70" : "text-black/70"
               }`}>
              No need to read long PDFs — just give them to us, and we'll handle the rest.
-             Upload - Process - Chat with your PDF.
+             Upload - Process - Get your summary within minutes .
               </p>
             </motion.div>
 
