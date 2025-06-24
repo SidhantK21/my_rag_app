@@ -1,7 +1,7 @@
 import { MilvusClient,DataType } from "@zilliz/milvus2-sdk-node";
 
 
-const address = "localhost:19530";
+const address = "milvus-standalone:19530";
 
 // export this client to tingle with the db in the other folders 
 type Collection_name=string;
@@ -34,7 +34,6 @@ const schema = {
       },
     ],
 };
-
 
 export const initailzeService=async ()=>{
   try {
@@ -85,7 +84,10 @@ try {
             metric_type: 'L2', 
             params: { nlist: 1024 },
         });
-        console.log("Index created successfully.");
+
+        // this should not be here either rmove it or just add anyother logic to show the error 
+        // console.log("Index created successfully.");
+
     } else {
         console.log("Index already exists.");
     }
