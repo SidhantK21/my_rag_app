@@ -3,11 +3,11 @@ FROM node:22-alpine
 WORKDIR /app
 
 COPY package* .
-COPY src/db/prisma ./src/db/prisma
+COPY src/prisma ./src/prisma
 
 
 RUN npm install 
-RUN npx prisma generate --schema=src/db/prisma/schema.prisma
+RUN npx prisma generate --schema=src/prisma/schema.prisma
 
 COPY . .
 RUN npm run build 

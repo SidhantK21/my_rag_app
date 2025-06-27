@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:14
+    container_name: rag-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: myrag_deploy
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - my-rag-network
+
+  milvus:
+    image: milvusdb/milvus:v2.3.3
+    container_name: milvus-standalone
+    restart: unless-stopped
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    command: ["milvus", "run", "standalone"]
+    networks:
+      - my-rag-network
+
+  backend:
+    build: ./backend
+    container_name: backend-image
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://postgres:myrag_deploy@postgres:5432/postgres
+      - MILVUS_ADDR=milvus-standalone:19530
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - milvus
+    networks:
+      - my-rag-network
+
+  frontend:
+    build: ./frontend
+    container_name: rag-frontend
+    restart: unless-stopped
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - my-rag-network
+
+networks:
+  my-rag-network:
+    driver: bridge

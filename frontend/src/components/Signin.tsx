@@ -22,7 +22,7 @@ export function SignIn({ onSignUp, onClose }: SignInProps) {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async () => {
       const data=await axios.post("http://localhost:3000/auth/signin",{email,password});
       console.log(data);
   };
